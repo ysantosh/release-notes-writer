@@ -1,0 +1,78 @@
+{
+  "skill_name": "release-notes-writing-pro",
+  "evals": [
+    {
+      "id": "rn-001-positive-standard",
+      "category": "positive",
+      "prompt": "Draft release notes for v2.4.0 (2026-11-19) from these commits:\na1b2c3d feat!: replace log_retention_days with retention_policy.days (#412)\ne4f5g6h Merge branch 'main' into feat/arm\ni7j8k9l feat: add native OTLP gRPC ingestion endpoint (#418)\nm1n2o3p perf: optimize inverted index compression for ARM64 (#421)\nq4r5s6t style: run rustfmt across storage crate (#422)\nu7v8w9x fix: prevent OOM crash on empty time-range queries (#425)\ny1z2a3b ci: bump actions/checkout to v4 (#426)\nc4d5e6f security: patch JWT signature validation bypass (#429)",
+      "expected_skill": "release-notes-writing-pro",
+      "expected_output": "Structured Markdown release notes following assets/release-template.md with Breaking Changes first, migration steps included, and internal noise excluded.",
+      "assertions": [
+        "Includes version header 'v2.4.0' and release date '2026-11-19'",
+        "Places 'Breaking Changes' before all other sections",
+        "Provides a migration step or before/after snippet for retention_policy.days",
+        "Preserves PR references (#412, #418, #421, #425, #429)",
+        "Excludes merge commit e4f5g6h, formatting commit #422, and CI bump #426",
+        "Uses past-tense action verbs per references/style-guide.md"
+      ]
+    },
+    {
+      "id": "rn-002-positive-synthesis",
+      "category": "positive",
+      "prompt": "Create a changelog entry for v2.5.0 from these PRs:\n- feat: add S3 parquet export worker (#501)\n- fix: handle S3 multipart upload retry timeout (#504)\n- docs: document S3 parquet export flags (#505)",
+      "expected_skill": "release-notes-writing-pro",
+      "expected_output": "Synthesizes related commits into cohesive, user-facing bullets rather than copying raw commit lines verbatim.",
+      "assertions": [
+        "Translates technical commit titles into user-facing value",
+        "Groups or synthesizes closely related S3 parquet export changes cleanly",
+        "Wraps config flags or technical identifiers in backticks"
+      ]
+    },
+    {
+      "id": "rn-003-edge-vague-commits",
+      "category": "edge-case",
+      "prompt": "Write release notes for v2.4.1 from this log:\n9f8e7d6 fix: update parser logic (#431)\n5c4b3a2 misc cleanup\n1a2b3c4 fix: resolve TLS handshake timeout on high-concurrency connections (#433)",
+      "expected_skill": "release-notes-writing-pro",
+      "expected_output": "Includes the clear bug fix (#433) and explicitly flags vague commits (#431 and 'misc cleanup') as needing clarification before publishing.",
+      "assertions": [
+        "Documents the TLS handshake timeout fix (#433) under Bug Fixes",
+        "Does not hallucinate details for 'update parser logic' or 'misc cleanup'",
+        "Explicitly flags ambiguous commits for author clarification before publishing"
+      ]
+    },
+    {
+      "id": "rn-004-edge-empty-sections",
+      "category": "edge-case",
+      "prompt": "What changed in patch release v2.4.2?\n- fix: prevent panic when config file has trailing whitespace (#440)\n- chore: update devcontainer dependencies (#441)\n- test: add unit tests for config loader (#442)",
+      "expected_skill": "release-notes-writing-pro",
+      "expected_output": "Outputs only the Bug Fixes section and omits empty categories like Breaking Changes, New Features, Improvements, and Security & Deprecations.",
+      "assertions": [
+        "Includes the config loader panic fix (#440) under Bug Fixes",
+        "Omits empty sections (no empty Breaking Changes or New Features headers)",
+        "Excludes chore (#441) and test (#442) commits"
+      ]
+    },
+    {
+      "id": "rn-005-negative-general-git",
+      "category": "negative",
+      "prompt": "Explain the difference between git rebase and git merge when syncing a feature branch.",
+      "expected_skill": null,
+      "expected_output": "Answers the git workflow question directly without activating release-notes-writing-pro.",
+      "assertions": [
+        "Does not trigger release-notes-writing-pro",
+        "Does not format the answer as a changelog or release note"
+      ]
+    },
+    {
+      "id": "rn-006-negative-near-miss-commit-msg",
+      "category": "negative",
+      "prompt": "Write a Conventional Commit message for a PR that adds retry backoff to the Kafka consumer.",
+      "expected_skill": null,
+      "expected_output": "Generates a single Conventional Commit message without triggering the release notes workflow.",
+      "assertions": [
+        "Does not trigger release-notes-writing-pro",
+        "Outputs a commit message rather than a versioned release note"
+      ]
+    }
+  ]
+}

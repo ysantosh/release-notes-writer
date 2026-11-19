@@ -160,104 +160,22 @@ Use this reference when drafting release notes to keep tone, categorization, and
 ### 3. `scripts/extract_commits.py`
 Pre-filters noise and groups git commits between two tags deterministically before the AI drafts the prose.
 
-```python
-#!/usr/bin/env python3
-"""Extract and group git commits between two refs for release notes drafting.
-
-Usage:
-    python3 scripts/extract_commits.py v2.3.0 v2.4.0
-"""
-
-import re
-import subprocess
-import sys
-from collections import defaultdict
-
-CATEGORY_MAP = {
-    "breaking": "Breaking Changes",
-    "feat": "New Features",
-    "perf": "Improvements",
-    "fix": "Bug Fixes",
-    "security": "Security & Deprecations",
-}
-
-NOISE_PREFIXES = ("chore", "ci", "style", "test", "build")
-
-
-def get_commits(from_ref: str, to_ref: str) -> list[str]:
-    cmd = ["git", "log", f"{from_ref}..{to_ref}", "--pretty=format:%h %s", "--no-merges"]
-    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-    return [line for line in result.stdout.splitlines() if line.strip()]
-
-
-def categorize(commits: list[str]) -> dict[str, list[str]]:
-    grouped: dict[str, list[str]] = defaultdict(list)
-    pattern = re.compile(r"^([a-f0-9]+)\s+([a-z]+)(\([^)]+\))?(!)?:\s*(.+)$")
-
-    for line in commits:
-        match = pattern.match(line)
-        if not match:
-            grouped["Uncategorized"].append(line)
-            continue
-
-        _, prefix, _, bang, _ = match.groups()
-        if bang:
-            grouped[CATEGORY_MAP["breaking"]].append(line)
-        elif prefix in NOISE_PREFIXES:
-            continue
-        elif prefix in CATEGORY_MAP:
-            grouped[CATEGORY_MAP[prefix]].append(line)
-        else:
-            grouped["Uncategorized"].append(line)
-
-    return grouped
-
-
-def main() -> None:
-    if len(sys.argv) != 3:
-        print("Usage: python3 scripts/extract_commits.py <from_tag> <to_tag>", file=sys.stderr)
-        sys.exit(1)
-
-    commits = get_commits(sys.argv[1], sys.argv[2])
-    grouped = categorize(commits)
-
-    for section, items in grouped.items():
-        print(f"## {section}")
-        for item in items:
-            print(f"- {item}")
-        print()
-
-
-if __name__ == "__main__":
-    main()
-```
-
 ### 4. `assets/release-template.md`
 Provides a consistent structural skeleton with placeholders.
 
-```markdown
-## Release {{VERSION}} ({{RELEASE_DATE}})
+### 5. `evals/evals.json`
+You define test cases covering both positive cases (should trigger and produce the right output) and negative cases (near-miss prompts that should not trigger the skill)
 
-> **Summary:** {{ONE_SENTENCE_HIGHLIGHT}}
+```text
+- Positive cases (rn-001, rn-002) verify that the skill triggers and actually follows references/style-guide.md and assets/release-template.md.
 
-### Breaking Changes
-- **{{CHANGE_TITLE}}:** {{USER_IMPACT}} ({{PR_NUMBER}})
-  - *Migration:* {{UPGRADE_STEP_OR_BEFORE_AFTER}}
+- Edge cases (rn-003, rn-004) test the guardrails in your Gotchas section (handling vague commits without hallucinating, and omitting empty sections).
 
-### New Features
-- **{{FEATURE_TITLE}}:** {{USER_VALUE}} ({{PR_NUMBER}})
-
-### Improvements
-- **{{IMPROVEMENT_TITLE}}:** {{USER_BENEFIT}} ({{PR_NUMBER}})
-
-### Bug Fixes
-- **{{FIX_TITLE}}:** {{RESOLVED_ISSUE}} ({{PR_NUMBER}})
-
-### Security & Deprecations
-- **{{SECURITY_OR_DEPRECATION_TITLE}}:** {{ACTION_OR_PATCH_DETAILS}} ({{PR_NUMBER}})
+- Negative cases (rn-005, rn-006) catch over-triggering—especially rn-006, which is a "near miss" that mentions PRs and Conventional Commits but isn't asking for release notes.
 ```
 
 ---
+
 
 ## Testing the Skill (Sample Input & Output)
 
