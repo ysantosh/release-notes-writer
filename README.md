@@ -1,6 +1,6 @@
 # Creating AI Skills for Gemini
 
-A practical guide and teaching reference for building reusable AI skills in Gemini using the **Open Agent Skills Standard**, complete with a multi-file example (`release-notes-writing-pro`).
+A practical guide for building reusable AI skills in Gemini using the **Open Agent Skills Standard** (`release-notes-writing`).
 
 ---
 
@@ -8,7 +8,7 @@ A practical guide and teaching reference for building reusable AI skills in Gemi
 
 1. [Three Ways to Create Skills for Gemini](#three-ways-to-create-skills-for-gemini)
 2. [Anatomy of an Agent Skill (Open Standard)](#anatomy-of-an-agent-skill-open-standard)
-3. [Multi-File Teaching Example: `release-notes-writing-pro`](#multi-file-teaching-example-release-notes-writing-pro)
+3. [Multi-File Example: `release-notes-writing`](#multi-file-example-release-notes-writing)
    - [`SKILL.md`](#1-skillmd)
    - [`references/style-guide.md`](#2-referencesstyle-guidemd)
    - [`scripts/extract_commits.py`](#3-scriptsextract_commitspy)
@@ -54,7 +54,7 @@ Best for engineering workflows, IDEs, and terminal agents.
 Under the **Open Agent Skills Specification**, a skill is a self-contained directory centered on a `SKILL.md` file. This design enables **progressive disclosure**: the AI scans only lightweight metadata at startup and loads full instructions or supporting files only when the skill is triggered.
 
 ```text
-release-notes-writing-pro/
+release-notes-writing/
 ├── SKILL.md                      # Required: metadata + core instructions
 ├── references/                   # Optional: style guides, rubrics, domain docs
 │   └── style-guide.md
@@ -66,7 +66,7 @@ release-notes-writing-pro/
 
 ### Key Components
 
-| Component | Purpose | Teaching Tip |
+| Component | Purpose | Tip |
 | :--- | :--- | :--- |
 | **YAML Frontmatter** | Contains `name` (lowercase alphanumeric + hyphens, 1–64 chars, matching the folder name) and `description`. | The `description` is the **primary trigger**. State both *what* the skill does and *when* to activate it. |
 | **Markdown Body** | Loaded only after activation. Includes `When to Use`, `Resources`, `Steps`, and `Gotchas`. | Keep it concise (under 500 lines) and use imperative instructions. |
@@ -76,7 +76,7 @@ release-notes-writing-pro/
 
 ---
 
-## Multi-File Teaching Example: `release-notes-writing-pro`
+## Multi-File Example: `release-notes-writing`
 
 This example demonstrates how a multi-file skill drafts user-facing release notes from merged pull requests and git commit history.
 
@@ -85,7 +85,7 @@ Links the supporting resources and defines the step-by-step workflow and guardra
 
 ```markdown
 ---
-name: release-notes-writing-pro
+name: release-notes-writing
 description: Drafts clear, user-facing release notes and changelog entries from merged pull requests and git commit history. Use when the user asks for release notes, a changelog entry, a release summary, or what changed between two versions or git tags.
 ---
 
@@ -304,9 +304,9 @@ g7h8i9j fix: update parser logic (#431)
 
 ## Managing Your Skills in Chat
 
-- **View a skill's contents:** Ask *"Show the contents of my `release-notes-writing-pro` skill."*
+- **View a skill's contents:** Ask *"Show the contents of my `release-notes-writing` skill."*
 - **List all saved skills:** Ask *"List my skills."*
-- **Invoke explicitly:** Ask *"Use `release-notes-writing-pro` to draft release notes for v3.0.0 from these commits."*
+- **Invoke explicitly:** Ask *"Use `release-notes-writing` to draft release notes for v3.0.0 from these commits."*
 
 ---
 
